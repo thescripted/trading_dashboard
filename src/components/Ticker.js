@@ -3,12 +3,12 @@ import TickerItem from "./TickerItem"
 
 const Ticker = () => {
   return (
-    <div className="flex rounded border-gray-400 border-b-2 ">
+    <div className="flex rounded border-gray-400 shadow-xl ">
       <TickerItem quote="AAPL" />
       <TickerItem quote="NFLX" />
       <TickerItem quote="SPOT" />
       <TickerItem quote="TSLA" />
-      <TickerItem quote="FB" />
+      <TickerItem quote="TWTR" />
     </div>
   )
 }

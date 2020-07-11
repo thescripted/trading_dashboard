@@ -1,12 +1,24 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
 
 const Header = () => {
+  const searchElement = useRef(null)
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => globalFocusToSearch(e))
+    return window.removeEventListener("keydown", (e) => globalFocusToSearch(e))
+  }, [])
+  const globalFocusToSearch = (element) => {
+    if (element.key === "/") {
+      searchElement.current.focus()
+    }
+  }
+
   return (
     <div className="w-full flex content-center p-4 px-8 justify-between bg-blue-500">
       <h2 className="text-white text-xl hover:text-white">Trading Platform</h2>
       <input
-        className="bg-gray-300 rounded w-64  p-2"
-        placeholder="Search (coming soon)"
+        ref={searchElement}
+        className="bg-gray-300 rounded w-full xl:w-3/4 l:w-1/2 p-2"
+        placeholder="Search (press / to focus)"
       ></input>
       <button className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded">
         <svg
