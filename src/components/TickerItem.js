@@ -21,6 +21,7 @@ const TickerItem = ({ quote }) => {
     isNegative: false,
   })
   useEffect(() => {
+    // Todo: Check if using a useEffect is necessary to grab data. Just in case.
     fetch(
       `https://finnhub.io/api/v1/quote?symbol=${quote}&token=${process.env.REACT_APP_FINHUB_API_KEY}`
     )

@@ -1,25 +1,43 @@
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
+import { QueryFeed } from "./QueryFeed"
+import QueryResult from "./QueryResult"
 
 const Header = () => {
+  const [itemQuery, setItemQuery] = useState("")
   const searchElement = useRef(null)
   useEffect(() => {
     window.addEventListener("keydown", (e) => globalFocusToSearch(e))
     return window.removeEventListener("keydown", (e) => globalFocusToSearch(e))
   }, [])
+
   const globalFocusToSearch = (element) => {
     if (element.key === "/") {
       searchElement.current.focus()
     }
   }
 
+  const queryRegex = new RegExp(itemQuery, "i")
+  const pokemon = QueryFeed.filter(
+    (item) => item.name.match(queryRegex) !== null
+  )
+
   return (
     <div className="w-full flex content-center p-4 px-8 justify-between bg-blue-500">
       <h2 className="text-white text-xl hover:text-white">Trading Platform</h2>
-      <input
-        ref={searchElement}
-        className="bg-gray-300 rounded w-full xl:w-3/4 l:w-1/2 p-2"
-        placeholder="Search (press / to focus)"
-      ></input>
+      <span className="relative w-full xl:w-3/4 l:w-1/2">
+        <input
+          ref={searchElement}
+          className="bg-gray-300 rounded w-full p-2"
+          placeholder="Search (press / to focus)"
+          value={itemQuery}
+          onChange={(e) => setItemQuery(e.target.value)}
+        ></input>
+        <div className="w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1">
+          <QueryResult />
+          <QueryResult />
+          <QueryResult />
+        </div>
+      </span>
       <button className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded">
         <svg
           enableBackground="new 0 0 24 24"
