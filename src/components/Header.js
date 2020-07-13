@@ -5,6 +5,7 @@ import QueryResult from "./QueryResult"
 const Header = () => {
   const [itemQuery, setItemQuery] = useState("")
   const searchElement = useRef(null)
+
   useEffect(() => {
     window.addEventListener("keydown", (e) => globalFocusToSearch(e))
     return window.removeEventListener("keydown", (e) => globalFocusToSearch(e))
@@ -12,11 +13,11 @@ const Header = () => {
 
   const globalFocusToSearch = (element) => {
     if (element.key === "/") {
-      searchElement.current.focus()
+      searchElement.current.focus() // TODO: Remove the slash after the event is focused.
     }
   }
 
-  const queryRegex = new RegExp(itemQuery, "i")
+  const queryRegex = new RegExp(itemQuery.trim(), "i")
   const pokemon = QueryFeed.filter(
     (item) => item.name.match(queryRegex) !== null
   )
@@ -32,10 +33,21 @@ const Header = () => {
           value={itemQuery}
           onChange={(e) => setItemQuery(e.target.value)}
         ></input>
-        <div className="w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1">
-          <QueryResult />
-          <QueryResult />
-          <QueryResult />
+        <div
+          style={{ maxHeight: "512px", overflowY: "scroll" }}
+          className={`${
+            itemQuery.trim() === "" && "hidden"
+          } w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1`}
+        >
+          {pokemon.length === 0 ? (
+            <h1 className="text-xl text-gray-500 py-4">
+              Sorry, No Results Found
+            </h1>
+          ) : (
+            pokemon.map((item, index) => (
+              <QueryResult key={index} item={item} />
+            ))
+          )}
         </div>
       </span>
       <button className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded">

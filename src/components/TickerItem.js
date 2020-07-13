@@ -33,7 +33,6 @@ const TickerItem = ({ quote }) => {
           isNegative: res.c - res.pc < 0 ? true : false,
         })
       )
-    console.log("rendered")
   }, [quote])
 
   return (
