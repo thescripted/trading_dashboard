@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react"
 
+//TODO: remap states into a reducer
+
 const formatQuotePercentage = (current, previous) => {
   const calculation = (current / previous - 1) * 100
   return calculation.toFixed(2).concat("%")
@@ -19,27 +21,60 @@ const TickerItem = ({ quote }) => {
     current: 0,
     previous: 0,
     isNegative: false,
+    didPriceFall: null,
   })
+
   useEffect(() => {
     // Todo: Check if using a useEffect is necessary to grab data. Just in case.
-    fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${quote}&token=${process.env.REACT_APP_FINHUB_API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((res) =>
-        setMarketData({
-          current: res.c,
-          previous: res.pc,
-          isNegative: res.c - res.pc < 0 ? true : false,
-        })
+    const timer = setInterval(() => {
+      fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${quote}&token=${process.env.REACT_APP_FINHUB_API_KEY}`
       )
-  }, [quote])
+        .then((res) => res.json())
+        .then((res) =>
+          setMarketData((prev) => {
+            return {
+              current: res.c,
+              previous: res.pc,
+              isNegative: res.c - res.pc < 0 ? true : false,
+              didPriceFall: prev.current > res.c ? true : false, // Checks to see if the market moved up/down based on previous fetch
+            }
+          })
+        )
+        .catch((err) => console.log(err))
+      console.log("ticked")
+    }, 10000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const elements = document.getElementById("market-quote").classList // removing color change after a brief flash.
+
+    console.log(elements)
+    const removeClassList = () => {
+      elements.remove("text-red-600", "text-green-600") // If item not in classList, then this does nothing.
+    }
+    setTimeout(removeClassList, 500)
+
+    return () => clearTimeout(removeClassList)
+  }, [marketData])
 
   return (
     <div className="block w-64 h-20 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200">
       <div className="space-x-2 flex justify-between">
         <span className="font-bold">{quote} - Nasdaq</span>
-        <span>{formatCurrentPrice(marketData.current)}</span>
+        <span
+          id="market-quote"
+          className={`${
+            marketData.didPriceFall === null
+              ? ""
+              : marketData.didPriceFall
+              ? "text-red-600"
+              : "text-green-600"
+          }`}
+        >
+          {formatCurrentPrice(marketData.current)}
+        </span>
       </div>
       <div
         className={`space-x-2 ${

@@ -1,13 +1,24 @@
 import React, { useEffect, useRef, useState } from "react"
-import { QueryFeed } from "./QueryFeed"
 import QueryResult from "./QueryResult"
+import _ from "lodash"
 
 const Header = () => {
   const [itemQuery, setItemQuery] = useState("")
+  const [stockList, setStocklist] = useState([])
   const searchElement = useRef(null)
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => globalFocusToSearch(e))
+
+    fetch(
+      `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        const filteredRes = res.filter((item) => item.description !== "")
+        setStocklist(filteredRes)
+      })
+
     return window.removeEventListener("keydown", (e) => globalFocusToSearch(e))
   }, [])
 
@@ -17,9 +28,21 @@ const Header = () => {
     }
   }
 
+  const handleInputChange = (e) => {
+    setItemQuery(e.target.value)
+    // _.debounce(() => {
+    //   setItemQuery(e.target.value)
+    //   console.log("bounced")
+    // }, 150)()
+    console.log("input")
+  }
+
   const queryRegex = new RegExp(itemQuery.trim(), "i")
-  const pokemon = QueryFeed.filter(
-    (item) => item.name.match(queryRegex) !== null
+  const stocks = stockList.filter(
+    // Very expensive operation TODO Optimize this
+    (stockItem) =>
+      stockItem.displaySymbol.match(queryRegex) !== null ||
+      stockItem.description.match(queryRegex) !== null
   )
 
   return (
@@ -31,22 +54,20 @@ const Header = () => {
           className="bg-gray-300 rounded w-full p-2"
           placeholder="Search (press / to focus)"
           value={itemQuery}
-          onChange={(e) => setItemQuery(e.target.value)}
+          onChange={(e) => handleInputChange(e)}
         ></input>
         <div
-          style={{ maxHeight: "512px", overflowY: "scroll" }}
+          style={{ maxHeight: "512px", overflowY: "hidden" }}
           className={`${
             itemQuery.trim() === "" && "hidden"
           } w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1`}
         >
-          {pokemon.length === 0 ? (
+          {stocks.length === 0 ? (
             <h1 className="text-xl text-gray-500 py-4">
               Sorry, No Results Found
             </h1>
           ) : (
-            pokemon.map((item, index) => (
-              <QueryResult key={index} item={item} />
-            ))
+            stocks.map((item, index) => <QueryResult key={index} item={item} />)
           )}
         </div>
       </span>

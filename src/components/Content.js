@@ -1,29 +1,21 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import Chart from "./Chart"
 
 const Content = () => {
+  const [candles, setCandles] = useState([])
   // useEffect(() => {
-  //   fetch("https://api.tdameritrade.com/v1/marketdata/AAPL/pricehistory", {
-  //     headers: new Headers({
-  //       Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
-  //     }),
-  //   })
+  //   fetch(
+  //     "https://api.tdameritrade.com/v1/marketdata/NFLX/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false",
+  //     {
+  //       headers: new Headers({
+  //         Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
+  //       }),
+  //     }
+  //   )
   //     .then((res) => res.json())
-  //     .then((res) => localStorage.setItem("AAPL", JSON.stringify(res)))
+  //     .then((res) => setCandles(res.candles))
   // }, [])
-
-  // useEffect( () => {
-  //   const postBody = {
-  //     grant_type: "refresh_token",
-  //     refresh_token: process.env.REACT_APP_REFRESH_TOKEN,
-  //     client_id: process.env.REACT_APP_API_KEY
-  //   }
-  //   fetch("https://api.tdameritrade.com/v1/oauth2/token", {
-  //     method: 'POST',
-  //     body: JSON.stringify(postBody)
-  //   }).then(res => res.json()).then(res => console.log(res))
-  // })
-
+  // localStorage.setItem("NFLX", JSON.stringify(candles))
   return (
     <div
       style={{ height: "480px" }}
@@ -32,7 +24,8 @@ const Content = () => {
       {/* <h1 className="m-0 text-gray-500 text-2xl">
         Use the Navigation Above to Select a Stock
       </h1> */}
-      <Chart />
+      {/* {candles.length !== 0 && <Chart candles={candles} />} */}
+      <Chart candles={candles} />
     </div>
   )
 }
