@@ -9,7 +9,6 @@ const green = "#b6e86f"
 
 const Chart = () => {
   const candles = JSON.parse(localStorage.getItem("NFLX"))
-  console.log(candles)
   candles.map((candle) => (candle.datetime = new Date(candle.datetime))) // turn UNIX into Date Type
   const xRef = useRef(null)
   const yRef = useRef(null)

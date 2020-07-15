@@ -48,9 +48,8 @@ const TickerItem = ({ quote }) => {
   }, [])
 
   useEffect(() => {
-    const elements = document.getElementById("market-quote").classList // removing color change after a brief flash.
+    const elements = document.getElementById("market-quote").classList // removing color change after a brief flash. This doesn't work.
 
-    console.log(elements)
     const removeClassList = () => {
       elements.remove("text-red-600", "text-green-600") // If item not in classList, then this does nothing.
     }

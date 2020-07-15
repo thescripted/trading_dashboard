@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import Chart from "./Chart"
-
+import DetailedQuote from "./DetailedQuote"
 const Content = () => {
   const [candles, setCandles] = useState([])
   // useEffect(() => {
@@ -25,6 +25,7 @@ const Content = () => {
         Use the Navigation Above to Select a Stock
       </h1> */}
       {/* {candles.length !== 0 && <Chart candles={candles} />} */}
+      <DetailedQuote />
       <Chart candles={candles} />
     </div>
   )
