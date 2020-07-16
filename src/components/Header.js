@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react"
+import React, { useCallback, useReducer, useEffect } from "react"
 import QueryResult from "./QueryResult"
 
 const debounce = (fn, delay) => {
@@ -9,83 +9,95 @@ const debounce = (fn, delay) => {
   }
 }
 
-const Header = () => {
-  const [input, setInput] = useState("")
-  const [itemQuery, setItemQuery] = useState("")
-  const [stockList, setStocklist] = useState([])
-  const [filteredStocks, setFilteredStocks] = useState([])
-  const searchElement = useRef(null)
+const initialState = {
+  userInput: "",
+  debouncedQuery: "",
+  listOfStocks: [],
+  queryStockResults: [],
+}
 
-  const debounceCallback = useCallback(
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_USER_INPUT":
+      return { ...state, userInput: action.value }
+    case "SET_DEBOUNCE_QUERY":
+      return { ...state, debouncedQuery: action.value }
+    case "INITIALIZE_STOCK":
+      return { ...state, listOfStocks: action.value }
+    case "FILTER_STOCK_FROM_DEBOUNCED_QUERY": {
+      return { ...state, queryStockResults: action.value }
+    }
+    default:
+      throw new Error()
+  }
+}
+
+const Header = () => {
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  const debounceCallBack = useCallback(
     debounce((value) => {
-      setItemQuery(value)
-      const queryRegex = new RegExp(itemQuery.trim(), "i")
-      const stocks = stockList.filter(
-        // Very expensive operation TODO Optimize this
-        (stockItem) =>
-          stockItem.displaySymbol.match(queryRegex) !== null ||
-          stockItem.description.match(queryRegex) !== null
-      )
-      setFilteredStocks(stocks)
-    }, 1000),
+      dispatch({ type: "SET_DEBOUNCE_QUERY", value: value })
+    }, 300),
     []
   )
 
-  const onInputChangeHandler = ({ target: { value } }) => {
-    setInput(value)
-    debounceCallback(value)
-  }
+  useEffect(() => {
+    let queryRegex = new RegExp(state.debouncedQuery.trim(), "i") // TODO: Expand this search Regex
+    let filter = state.listOfStocks.filter(
+      (stockItem) =>
+        stockItem.displaySymbol.match(queryRegex) !== null ||
+        stockItem.description.match(queryRegex) !== null
+    )
+    dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
+  }, [state.debouncedQuery])
 
   useEffect(() => {
-    window.addEventListener("keydown", (e) => globalFocusToSearch(e))
-
-    fetch(
-      `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${process.env.REACT_APP_FINHUB_API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        const filteredRes = res.filter((item) => item.description !== "")
-        setStocklist(filteredRes)
-      })
-
-    return window.removeEventListener("keydown", (e) => globalFocusToSearch(e))
+    if (!state.listOfStocks || !state.listOfStocks.length) {
+      let filteredStock
+      fetch(
+        `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          filteredStock = res.filter((item) => item.description !== "")
+          dispatch({ type: "INITIALIZE_STOCK", value: filteredStock })
+        })
+    }
   }, [])
 
-  const globalFocusToSearch = (element) => {
-    if (element.key === "/") {
-      searchElement.current.focus() // TODO: Remove the slash after the event is focused.
-    }
+  const onInputChangeHandler = ({ target: { value } }) => {
+    dispatch({ type: "SET_USER_INPUT", value: value })
+    debounceCallBack(value) // This will get fired many times but debounce function will control/"throttle" it's execution
   }
-
   return (
-    <div className="w-full flex content-center p-4 px-8 justify-between bg-blue-500">
+    <div className="flex content-center p-4 px-8 justify-between bg-blue-500">
       <a href="/" className="pointer">
         <h2 className="text-white text-xl hover:text-white">
-          Trading Platform
+          Trading Analytics
         </h2>
       </a>
       <span className="relative w-full xl:w-3/4 l:w-1/2">
         <input
-          ref={searchElement}
           className="bg-gray-300 rounded w-full p-2"
           placeholder="Search (press / to focus)"
-          value={input}
+          value={state.userInput}
           onChange={onInputChangeHandler}
         ></input>
         <div
           style={{ maxHeight: "512px", overflowY: "hidden" }}
           className={`${
-            itemQuery.trim() === "" && "hidden"
+            state.userInput.trim() === "" && "hidden"
           } w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1`}
         >
-          {filteredStocks.length === 0 ? (
+          {state.queryStockResults.length === 0 ? (
             <h1 className="text-xl text-gray-500 py-4">
               Sorry, No Results Found
             </h1>
           ) : (
-            filteredStocks.map((item, index) => (
-              <QueryResult key={index} item={item} />
-            ))
+            state.queryStockResults
+              .slice(0, 10)
+              .map((item, index) => <QueryResult key={index} item={item} />)
           )}
         </div>
       </span>

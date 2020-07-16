@@ -5,7 +5,7 @@ const DetailedQuote = (props) => {
     <div className="flex flex-col space-y-2 flex-grow p-4 self-start">
       <div className="flex flex-row justify-between text-xl font-bold border-b-2 border-black ">
         <h2>AAPL:US</h2>
-        <h2>Apple Incorporated</h2>
+        <h2 className="font-normal">Apple Incorporated</h2>
       </div>
       <div className="flex flex-col subheading items-end">
         <span className="flex flex-row items-end space-x-1">

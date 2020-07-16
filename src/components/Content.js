@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import NewChart from "./NewChart"
+import Chart from "./Chart"
 import DetailedQuote from "./DetailedQuote"
 const Content = () => {
   const [candles, setCandles] = useState([])
@@ -26,7 +26,7 @@ const Content = () => {
       </h1> */}
       {/* {candles.length !== 0 && <Chart candles={candles} />} */}
       <DetailedQuote />
-      <NewChart candles={candles} />
+      <Chart candles={candles} />
     </div>
   )
 }
