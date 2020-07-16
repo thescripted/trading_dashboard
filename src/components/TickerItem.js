@@ -42,8 +42,7 @@ const TickerItem = ({ quote }) => {
           })
         )
         .catch((err) => console.log(err))
-      console.log("ticked")
-    }, 10000)
+    }, 15000)
     return () => clearInterval(timer)
   }, [])
 

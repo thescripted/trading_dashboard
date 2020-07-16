@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from "react"
+import React, { useCallback, useReducer, useEffect } from "react"
 import QueryResult from "./QueryResult"
 
 const debounce = (fn, delay) => {
@@ -23,7 +23,7 @@ function reducer(state, action) {
     case "SET_DEBOUNCE_QUERY":
       return { ...state, debouncedQuery: action.value }
     case "INITIALIZE_STOCK":
-      return { ...state, listOfStocks: action.stocks }
+      return { ...state, listOfStocks: action.value }
     case "FILTER_STOCK_FROM_DEBOUNCED_QUERY": {
       return { ...state, queryStockResults: action.value }
     }
@@ -34,35 +34,44 @@ function reducer(state, action) {
 
 const Header = () => {
   const [state, dispatch] = useReducer(reducer, initialState)
+
   const debounceCallBack = useCallback(
     debounce((value) => {
       dispatch({ type: "SET_DEBOUNCE_QUERY", value: value })
-      let queryRegex = new RegExp(state.debouncedQuery.trim(), "i") // TODO: Expand this search Regex
-      let filter = state.listOfStocks.filter(
-        (stockItem) =>
-          stockItem.displaySymbol.match(queryRegex) !== null ||
-          stockItem.description.match(queryRegex) !== null
-      )
-      dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
-    }, 1000),
+    }, 300),
     []
   )
 
-  if (!state.listOfStocks || !state.listOfStocks.length) {
-    fetch(
-      `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+  useEffect(() => {
+    let queryRegex = new RegExp(state.debouncedQuery.trim(), "i") // TODO: Expand this search Regex
+    let filter = state.listOfStocks.filter(
+      (stockItem) =>
+        stockItem.displaySymbol.match(queryRegex) !== null ||
+        stockItem.description.match(queryRegex) !== null
     )
-      .then((res) => res.json())
-      .then((res) => {
-        dispatch({ type: "INITIALIZE_STOCK", value: res })
-      })
-  }
+    dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
+  }, [state.debouncedQuery])
+
+  useEffect(() => {
+    if (!state.listOfStocks || !state.listOfStocks.length) {
+      let filteredStock
+      fetch(
+        `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          filteredStock = res.filter((item) => item.description !== "")
+          dispatch({ type: "INITIALIZE_STOCK", value: filteredStock })
+        })
+    }
+  }, [])
+
   const onInputChangeHandler = ({ target: { value } }) => {
     dispatch({ type: "SET_USER_INPUT", value: value })
-    debounceCallBack() // This will get fired many times but debounce function will control/"throttle" it's execution
+    debounceCallBack(value) // This will get fired many times but debounce function will control/"throttle" it's execution
   }
   return (
-    <div className="w-full flex content-center p-4 px-8 justify-between bg-blue-500">
+    <div className="flex content-center p-4 px-8 justify-between bg-blue-500">
       <a href="/" className="pointer">
         <h2 className="text-white text-xl hover:text-white">
           Trading Platform
