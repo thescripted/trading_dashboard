@@ -21,10 +21,23 @@ const App = () => {
       .then((res) => setChartData(res))
   }
 
+  const tickerResultCallBack = (ticker) => {
+    fetch(
+      `https://api.tdameritrade.com/v1/marketdata/${ticker}/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false`,
+      {
+        headers: new Headers({
+          Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => setChartData(res))
+  }
+
   return (
     <div>
       <Header queryResultCallBack={queryResultCallBack} />
-      <Ticker />
+      <Ticker tickerResultCallBack={tickerResultCallBack} />
       <Content chartData={chartData} />
     </div>
   )

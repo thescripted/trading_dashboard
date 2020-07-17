@@ -67,7 +67,6 @@ const Chart = ({ data }) => {
 
   // Generate SVG Image
   useEffect(() => {
-    console.log(x(d3.utcDay(data[3].datetime)))
     const svg = d3.select(svgElement.current)
 
     svg.append("g").call(xAxis)

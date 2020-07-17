@@ -91,6 +91,7 @@ const Header = ({ queryResultCallBack }) => {
 
   const handleData = (item) => {
     queryResultCallBack(item.displaySymbol)
+    dispatch({ type: "DISPLAY_SEARCH_RESULTS", value: false })
   }
   return (
     <div className="flex flex-row content-center p-4 px-8 justify-between bg-blue-500">

@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from "react"
-
+import {
+  formatQuoteDifference,
+  formatQuotePercentage,
+  formatCurrentPrice,
+} from "../support/index"
 //TODO: remap states into a reducer
 
-const formatQuotePercentage = (current, previous) => {
-  const calculation = (current / previous - 1) * 100
-  return calculation.toFixed(2).concat("%")
-}
-
-const formatCurrentPrice = (current) => {
-  return Number.parseFloat(current.toString().padEnd(3, "0")).toFixed(2) // Ensure API data returns in proper monetary type
-}
-
-const formatQuoteDifference = (current, previous) => {
-  const calculation = current - previous
-  return calculation.toFixed(2)
-}
-
-const TickerItem = ({ quote }) => {
+const TickerItem = ({ quote, onClick }) => {
   const [marketData, setMarketData] = useState({
     current: 0,
     previous: 0,
@@ -58,7 +48,10 @@ const TickerItem = ({ quote }) => {
   }, [marketData])
 
   return (
-    <div className="block w-64 h-20 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200">
+    <div
+      className="block w-64 h-20 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200"
+      onClick={() => onClick(quote)}
+    >
       <div className="space-x-2 flex justify-between">
         <span className="font-bold">{quote} - Nasdaq</span>
         <span

@@ -4,7 +4,6 @@ import DetailedQuote from "./DetailedQuote"
 const Content = ({ chartData }) => {
   const [isData, setIsData] = useState(false)
   useEffect(() => {
-    console.log(chartData.candles)
     if (chartData.candles && chartData.candles.length) {
       setIsData(true)
     }
