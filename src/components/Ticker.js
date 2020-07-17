@@ -4,11 +4,31 @@ import TickerItem from "./TickerItem"
 const Ticker = ({ tickerResultCallBack }) => {
   return (
     <div className="flex rounded border-gray-400 shadow-xl ">
-      <TickerItem quote="AAPL" onClick={tickerResultCallBack} />
-      <TickerItem quote="NFLX" onClick={tickerResultCallBack} />
-      <TickerItem quote="SPOT" onClick={tickerResultCallBack} />
-      <TickerItem quote="TSLA" onClick={tickerResultCallBack} />
-      <TickerItem quote="TWTR" onClick={tickerResultCallBack} />
+      <TickerItem
+        quote="AAPL"
+        description="Apple Inc."
+        onClick={tickerResultCallBack}
+      />
+      <TickerItem
+        quote="NFLX"
+        description="Netflix, Inc."
+        onClick={tickerResultCallBack}
+      />
+      <TickerItem
+        quote="SPOT"
+        description="Spotify Technology"
+        onClick={tickerResultCallBack}
+      />
+      <TickerItem
+        quote="TSLA"
+        description="Tesla, Inc."
+        onClick={tickerResultCallBack}
+      />
+      <TickerItem
+        quote="TWTR"
+        description="Twitter, Inc."
+        onClick={tickerResultCallBack}
+      />
     </div>
   )
 }

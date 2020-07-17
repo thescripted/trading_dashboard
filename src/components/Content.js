@@ -24,7 +24,7 @@ const Content = ({ chartData }) => {
   return (
     <div
       style={{ height: "480px" }}
-      className="flex justify-center items-center space-x-2 w-full mt-4 mx-auto bg-white shadow-md rounded"
+      className="flex justify-center items-center w-full mt-4 mx-auto bg-white shadow-md rounded p-2"
     >
       {!isData && (
         <h1 className="m-0 text-gray-500 text-2xl">

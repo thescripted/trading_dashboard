@@ -30,7 +30,7 @@ const DetailedQuote = ({ tickerToFetch }) => {
   } = content
 
   return (
-    <div className="flex flex-col w-1/4 space-y-2 p-4 self-start">
+    <div className="flex flex-col w-1/4 space-y-2 px-4 py-8 self-start">
       {content.mark && (
         <>
           <div className="flex flex-row justify-between text-xl font-bold border-b-2 border-black space-x-1 ">

@@ -4,9 +4,8 @@ import {
   formatQuotePercentage,
   formatCurrentPrice,
 } from "../support/index"
-//TODO: remap states into a reducer
 
-const TickerItem = ({ quote, onClick }) => {
+const TickerItem = ({ quote, description, onClick }) => {
   const [marketData, setMarketData] = useState({
     current: 0,
     previous: 0,
@@ -14,24 +13,29 @@ const TickerItem = ({ quote, onClick }) => {
     didPriceFall: null,
   })
 
-  useEffect(() => {
-    // Todo: Check if using a useEffect is necessary to grab data. Just in case.
-    const timer = setInterval(() => {
-      fetch(
-        `https://finnhub.io/api/v1/quote?symbol=${quote}&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+  const fetcher = () =>
+    fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${quote}&token=${process.env.REACT_APP_FINHUB_API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((res) =>
+        setMarketData((prev) => {
+          return {
+            current: res.c,
+            previous: res.pc,
+            isNegative: res.c - res.pc < 0 ? true : false,
+            didPriceFall: prev.current > res.c ? true : false, // Checks to see if the market moved up/down based on previous fetch
+          }
+        })
       )
-        .then((res) => res.json())
-        .then((res) =>
-          setMarketData((prev) => {
-            return {
-              current: res.c,
-              previous: res.pc,
-              isNegative: res.c - res.pc < 0 ? true : false,
-              didPriceFall: prev.current > res.c ? true : false, // Checks to see if the market moved up/down based on previous fetch
-            }
-          })
-        )
-        .catch((err) => console.log(err))
+      .catch((err) => console.log(err))
+
+  useEffect(() => {
+    if (!marketData.current) {
+      fetcher()
+    }
+    const timer = setInterval(() => {
+      fetcher()
     }, 15000)
     return () => clearInterval(timer)
   }, [])
@@ -49,11 +53,14 @@ const TickerItem = ({ quote, onClick }) => {
 
   return (
     <div
-      className="block w-64 h-20 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200"
+      className="block w-64 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200"
       onClick={() => onClick(quote)}
     >
       <div className="space-x-2 flex justify-between">
-        <span className="font-bold">{quote} - Nasdaq</span>
+        <div className="flex flex-col ">
+          <p className="font-bold">{quote}</p>
+          <p>{description}</p>
+        </div>
         <span
           id="market-quote"
           className={`${
@@ -77,7 +84,7 @@ const TickerItem = ({ quote, onClick }) => {
             <svg
               id="Negative"
               enableBackground="new 0 0 515.556 515.556"
-              height="8"
+              height="12"
               viewBox="0 0 515.556 515.556"
               width="12"
               xmlns="http://www.w3.org/2000/svg"
@@ -89,18 +96,17 @@ const TickerItem = ({ quote, onClick }) => {
             </svg>
           ) : (
             <svg
+              id="Capa_1"
+              enable-background="new 0 0 515.556 515.556"
+              height="12"
+              viewBox="0 0 515.556 515.556"
               width="12"
-              height="8"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 12 8"
             >
               <path
-                fill="none"
-                stroke="currentcolor"
-                strokeLinecap="round"
-                strokeWidth="2"
-                d="m1 6 5-4 5 4"
-              ></path>
+                fill="currentColor"
+                d="m257.778 128.885 257.778 257.778h-128.886l-128.892-128.889-128.886 128.897-128.892-.008z"
+              />
             </svg>
           )}
         </span>
