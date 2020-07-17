@@ -7,9 +7,8 @@ const Content = ({ chartData }) => {
     if (chartData.candles && chartData.candles.length) {
       setIsData(true)
     }
-  })
-  // useEffect(() => {
-  //   fetch(
+  }, [chartData.candles])
+  // useEffect(() => { //   fetch(
   //     "https://api.tdameritrade.com/v1/marketdata/NFLX/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false",
   //     {
   //       headers: new Headers({
@@ -21,15 +20,17 @@ const Content = ({ chartData }) => {
   //     .then((res) => setCandles(res.candles))
   // }, [])
   // localStorage.setItem("NFLX", JSON.stringify(candles))
+  // const data = JSON.parse(localStorage.getItem("NFLX"))
   return (
     <div
       style={{ height: "480px" }}
       className="flex justify-center items-center space-x-2 w-full mt-4 mx-auto bg-white shadow-md rounded"
     >
-      {/* <h1 className="m-0 text-gray-500 text-2xl">
-        Use the Navigation Above to Select a Stock
-      </h1> */}
-      {/* {candles.length !== 0 && <Chart candles={candles} />} */}
+      {!isData && (
+        <h1 className="m-0 text-gray-500 text-2xl">
+          Use the Navigation Above to Select a Stock
+        </h1>
+      )}
       {isData && <DetailedQuote tickerToFetch={chartData.symbol} />}
       {isData && <Chart key={chartData.symbol} data={chartData.candles} />}
     </div>
