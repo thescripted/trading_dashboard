@@ -1,8 +1,11 @@
 import React from "react"
 
-const QueryResult = ({ item }) => {
+const QueryResult = ({ item, onClick }) => {
   return (
-    <div className="w-full p-2 hover:bg-gray-300 rounded flex flex-col">
+    <div
+      className="w-full p-2 hover:bg-gray-300 rounded flex flex-col"
+      onClick={() => onClick(item)}
+    >
       <span className="inline-flex justify-between">
         <h2 className="text-xl">{item.displaySymbol}</h2>
         <h2 className="text-xl">317.59</h2>

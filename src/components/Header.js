@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useEffect } from "react"
+import React, { useCallback, useReducer, useEffect, useRef } from "react"
 import QueryResult from "./QueryResult"
 
 const debounce = (fn, delay) => {
@@ -14,6 +14,7 @@ const initialState = {
   debouncedQuery: "",
   listOfStocks: [],
   queryStockResults: [],
+  isDropdown: false,
 }
 
 function reducer(state, action) {
@@ -27,13 +28,30 @@ function reducer(state, action) {
     case "FILTER_STOCK_FROM_DEBOUNCED_QUERY": {
       return { ...state, queryStockResults: action.value }
     }
+    case "DISPLAY_SEARCH_RESULTS": {
+      return { ...state, isDropdown: action.value }
+    }
     default:
       throw new Error()
   }
 }
 
-const Header = () => {
+const Header = ({ queryResultCallBack }) => {
+  const wrapperRef = useRef(null)
   const [state, dispatch] = useReducer(reducer, initialState)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        dispatch({ type: "DISPLAY_SEARCH_RESULTS", value: false })
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [wrapperRef])
 
   const debounceCallBack = useCallback(
     debounce((value) => {
@@ -41,16 +59,6 @@ const Header = () => {
     }, 300),
     []
   )
-
-  useEffect(() => {
-    let queryRegex = new RegExp(state.debouncedQuery.trim(), "i") // TODO: Expand this search Regex
-    let filter = state.listOfStocks.filter(
-      (stockItem) =>
-        stockItem.displaySymbol.match(queryRegex) !== null ||
-        stockItem.description.match(queryRegex) !== null
-    )
-    dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
-  }, [state.debouncedQuery])
 
   useEffect(() => {
     if (!state.listOfStocks || !state.listOfStocks.length) {
@@ -66,14 +74,28 @@ const Header = () => {
     }
   }, [])
 
+  useEffect(() => {
+    let queryRegex = new RegExp(state.debouncedQuery.trim(), "i") // TODO: Expand this search Regex
+    let filter = state.listOfStocks.filter(
+      (stockItem) =>
+        stockItem.displaySymbol.match(queryRegex) !== null ||
+        stockItem.description.match(queryRegex) !== null
+    )
+    dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
+  }, [state.debouncedQuery])
+
   const onInputChangeHandler = ({ target: { value } }) => {
     dispatch({ type: "SET_USER_INPUT", value: value })
     debounceCallBack(value) // This will get fired many times but debounce function will control/"throttle" it's execution
   }
+
+  const handleData = (item) => {
+    queryResultCallBack(item.displaySymbol)
+  }
   return (
-    <div className="flex content-center p-4 px-8 justify-between bg-blue-500">
+    <div className="flex flex-row content-center p-4 px-8 justify-between bg-blue-500">
       <a href="/" className="pointer">
-        <h2 className="text-white text-xl hover:text-white">
+        <h2 className="text-white text-xl hover:text-white self-center">
           Trading Analytics
         </h2>
       </a>
@@ -82,24 +104,33 @@ const Header = () => {
           className="bg-gray-300 rounded w-full p-2"
           placeholder="Search (press / to focus)"
           value={state.userInput}
+          onClick={() => {
+            dispatch({ type: "DISPLAY_SEARCH_RESULTS", value: true })
+          }}
           onChange={onInputChangeHandler}
         ></input>
-        <div
-          style={{ maxHeight: "512px", overflowY: "hidden" }}
-          className={`${
-            state.userInput.trim() === "" && "hidden"
-          } w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1`}
-        >
-          {state.queryStockResults.length === 0 ? (
-            <h1 className="text-xl text-gray-500 py-4">
-              Sorry, No Results Found
-            </h1>
-          ) : (
-            state.queryStockResults
-              .slice(0, 10)
-              .map((item, index) => <QueryResult key={index} item={item} />)
-          )}
-        </div>
+        {state.isDropdown && (
+          <div
+            ref={wrapperRef}
+            style={{ maxHeight: "512px", overflowY: "hidden" }}
+            id="search_result"
+            className={`${
+              state.userInput.trim() === "" && "hidden"
+            } w-full absolute p-4 mt-2 text-black bg-gray-100 rounded box-border border border-gray-600 space-y-1`}
+          >
+            {state.queryStockResults.length === 0 ? (
+              <h1 className="text-xl text-gray-500 py-4">
+                Sorry, No Results Found
+              </h1>
+            ) : (
+              state.queryStockResults
+                .slice(0, 10)
+                .map((item, index) => (
+                  <QueryResult key={index} item={item} onClick={handleData} />
+                ))
+            )}
+          </div>
+        )}
       </span>
       <button className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded">
         <svg

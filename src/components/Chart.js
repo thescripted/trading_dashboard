@@ -4,7 +4,6 @@ import * as d3 from "d3"
 const height = 350
 const width = 700
 const margin = { top: 20, right: 30, bottom: 30, left: 40 }
-const parseDate = d3.utcParse("%Q")
 const formatDate = d3.utcFormat("%B %-d, %Y")
 const formatValue = d3.format(".2f")
 const formatChange = (y0, y1) => {
@@ -12,12 +11,11 @@ const formatChange = (y0, y1) => {
   return f((y1 - y0) / y0)
 }
 
-const data = JSON.parse(localStorage.getItem("NFLX")).slice(-90)
-data.forEach((dateItem) => (dateItem.datetime = parseDate(dateItem.datetime))) // Formats Date from UNIX millisecond to UTC Format
+// const data = JSON.parse(localStorage.getItem("NFLX")).slice(-90)
 
-const Chart = () => {
+const Chart = ({ data }) => {
+  data = data.slice(-90)
   const svgElement = useRef(null)
-  console.log(data)
 
   const xAxis = (g) =>
     g

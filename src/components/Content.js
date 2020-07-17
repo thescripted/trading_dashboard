@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react"
 import Chart from "./Chart"
 import DetailedQuote from "./DetailedQuote"
-const Content = () => {
-  const [candles, setCandles] = useState([])
+const Content = ({ chartData }) => {
+  const [isData, setIsData] = useState(false)
+  useEffect(() => {
+    console.log(chartData.candles)
+    if (chartData.candles && chartData.candles.length) {
+      setIsData(true)
+    }
+  })
   // useEffect(() => {
   //   fetch(
   //     "https://api.tdameritrade.com/v1/marketdata/NFLX/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false",
@@ -25,8 +31,8 @@ const Content = () => {
         Use the Navigation Above to Select a Stock
       </h1> */}
       {/* {candles.length !== 0 && <Chart candles={candles} />} */}
-      <DetailedQuote />
-      <Chart candles={candles} />
+      {isData && <DetailedQuote tickerToFetch={chartData.symbol} />}
+      {isData && <Chart key={chartData.symbol} data={chartData.candles} />}
     </div>
   )
 }
