@@ -72,6 +72,7 @@ const Header = ({ queryResultCallBack }) => {
           dispatch({ type: "INITIALIZE_STOCK", value: filteredStock })
         })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const Header = ({ queryResultCallBack }) => {
         stockItem.description.match(queryRegex) !== null
     )
     dispatch({ type: "FILTER_STOCK_FROM_DEBOUNCED_QUERY", value: filter })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.debouncedQuery])
 
   const onInputChangeHandler = ({ target: { value } }) => {

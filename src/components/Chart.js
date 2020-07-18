@@ -11,8 +11,6 @@ const formatChange = (y0, y1) => {
   return f((y1 - y0) / y0)
 }
 
-// const data = JSON.parse(localStorage.getItem("NFLX")).slice(-90)
-
 const Chart = ({ data }) => {
   data = data.slice(-90)
   const svgElement = useRef(null)
@@ -65,11 +63,6 @@ const Chart = ({ data }) => {
     .domain([d3.min(data, (d) => d.low), d3.max(data, (d) => d.high)])
     .rangeRound([height - margin.bottom, margin.top])
 
-  // linetip.style("display", null).attr("d", function () {
-  //   let d = "M" + mouseX + "," + (height - margin.bottom)
-  //   d += " " + mouseX + "," + margin.top
-  //   return d
-  // })
   const lineCallout = (path, value) => {
     if (!value) return path.style("display", "none")
 
@@ -106,7 +99,7 @@ const Chart = ({ data }) => {
           .style("font-weight", (_, i) => (i ? null : "bold"))
           .text((d) => d)
       )
-    const { x, y, width: w, height: h } = text.node().getBBox()
+    const { y, width: w, height: h } = text.node().getBBox()
 
     text.attr("transform", `translate(${-w / 2}, ${15 - y})`)
     path.attr(
@@ -114,8 +107,6 @@ const Chart = ({ data }) => {
       `M${-w / 2 - 10}, 5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`
     )
   }
-
-  // const lineCallout = (g) => {}
 
   const bisect = (mx) => {
     const inverter = d3.scaleQuantize().domain(x.range()).range(x.domain())
@@ -200,6 +191,7 @@ const Chart = ({ data }) => {
       linetip.call(lineCallout, null)
       tooltip.call(callout, null)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

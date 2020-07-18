@@ -48,6 +48,7 @@ const TickerItem = ({ quote, description, onClick, className }) => {
       flashMoneyDirection()
     }, 12000)
     return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
