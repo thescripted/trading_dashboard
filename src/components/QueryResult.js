@@ -3,6 +3,7 @@ import {
   formatCurrentPrice,
   formatPercentage,
   formatDifference,
+  getAccessToken,
 } from "../support/index"
 
 const QueryResult = ({ item, onClick }) => {
@@ -10,7 +11,7 @@ const QueryResult = ({ item, onClick }) => {
   useEffect(() => {
     fetch(`https://api.tdameritrade.com/v1/marketdata/${item.symbol}/quotes`, {
       headers: new Headers({
-        Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${getAccessToken()}`,
       }),
     })
       .then((res) => res.json())
@@ -26,13 +27,13 @@ const QueryResult = ({ item, onClick }) => {
       {response.mark && (
         <>
           <span className="inline-flex justify-between">
-            <h2 className="text-xl">{item.displaySymbol}</h2>
-            <h2 className="text-xl">{formatCurrentPrice(mark)}</h2>
+            <h2 className="text-l sm:text-xl">{item.displaySymbol}</h2>
+            <h2 className="text-l sm:text-xl">{formatCurrentPrice(mark)}</h2>
           </span>
           <span className="inline-flex justify-between">
-            <p className="text-sm">{item.description}</p>
+            <p className="text-xs sm:text-sm">{item.description}</p>
             <p
-              className={`text-sm ${
+              className={`text-xs sm:text-sm ${
                 markChangeInDouble > 0 ? "text-green-500" : "text-red-500"
               }`}
             >

@@ -23,11 +23,11 @@ const Content = ({ chartData }) => {
   // const data = JSON.parse(localStorage.getItem("NFLX"))
   return (
     <div
-      style={{ height: "480px" }}
-      className="flex justify-center items-center w-full mt-4 mx-auto bg-white shadow-md rounded p-2"
+      style={{ minHeight: "450px" }}
+      className="flex flex-col md:flex-row justify-center items-center w-full mt-4 mx-auto bg-white shadow-lg rounded p-2"
     >
       {!isData && (
-        <h1 className="m-0 text-gray-500 text-2xl">
+        <h1 className="m-0 text-center text-gray-500 text-xl sm:text-2xl p-2">
           Use the Navigation Above to Select a Stock
         </h1>
       )}

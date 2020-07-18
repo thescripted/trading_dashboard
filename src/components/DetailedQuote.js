@@ -3,7 +3,8 @@ import {
   formatCurrentPrice,
   formatDifference,
   formatPercentage,
-} from "../support/index"
+  getAccessToken,
+} from "../support"
 
 const DetailedQuote = ({ tickerToFetch }) => {
   const [content, setContent] = useState({})
@@ -12,7 +13,7 @@ const DetailedQuote = ({ tickerToFetch }) => {
       `https://api.tdameritrade.com/v1/marketdata/${tickerToFetch}/quotes`,
       {
         headers: new Headers({
-          Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         }),
       }
     )
@@ -20,8 +21,8 @@ const DetailedQuote = ({ tickerToFetch }) => {
       .then((res) => setContent(res[tickerToFetch]))
   }, [tickerToFetch])
 
-  window.content = content
-
+  const date = new Date()
+  date.setDate(date.getDate() - 1)
   const {
     description,
     mark,
@@ -30,14 +31,16 @@ const DetailedQuote = ({ tickerToFetch }) => {
   } = content
 
   return (
-    <div className="flex flex-col w-1/4 space-y-2 px-4 py-8 self-start">
+    <div className="flex flex-col w-full md:w-1/4 space-y-2 p-4 self-start box-border">
       {content.mark && (
         <>
-          <div className="flex flex-row justify-between text-xl font-bold border-b-2 border-black space-x-1 ">
+          <div className="flex flex-row justify-between text-xl md:text-l lg:text-xl font-bold border-b-2 border-black space-x-1 ">
             <h2>{tickerToFetch}:US</h2>
-            <h2 className="font-normal text-right">{description}</h2>
+            <h2 className="font-normal text-right break-normal">
+              {description}
+            </h2>
           </div>
-          <div className="flex flex-col subheading items-end">
+          <div className="flex flex-col subheading items-start md:items-end">
             <span className="flex flex-row items-end space-x-1">
               <h1 className="text-3xl font-bold">{formatCurrentPrice(mark)}</h1>
               <p className="text-xs mb-1">USD</p>
@@ -51,7 +54,7 @@ const DetailedQuote = ({ tickerToFetch }) => {
               <p> {formatPercentage(markPercentChangeInDouble)}</p>
             </div>
             <p className="text-sm text-gray-600">
-              Last Updated: {new Date().toLocaleDateString()}
+              Last Updated: {date.toLocaleDateString()}
             </p>
           </div>
         </>

@@ -3,15 +3,24 @@ import {
   formatQuoteDifference,
   formatQuotePercentage,
   formatCurrentPrice,
-} from "../support/index"
+} from "../support/"
 
-const TickerItem = ({ quote, description, onClick }) => {
+const TickerItem = ({ quote, description, onClick, className }) => {
+  const [color, setColor] = useState(null)
   const [marketData, setMarketData] = useState({
     current: 0,
     previous: 0,
     isNegative: false,
     didPriceFall: null,
   })
+
+  const flashMoneyDirection = () => {
+    if (marketData.didPriceFall) setColor("red")
+    else setColor("green")
+    setTimeout(() => {
+      setColor(null)
+    }, 350)
+  }
 
   const fetcher = () =>
     fetch(
@@ -36,7 +45,8 @@ const TickerItem = ({ quote, description, onClick }) => {
     }
     const timer = setInterval(() => {
       fetcher()
-    }, 15000)
+      flashMoneyDirection()
+    }, 12000)
     return () => clearInterval(timer)
   }, [])
 
@@ -53,7 +63,7 @@ const TickerItem = ({ quote, description, onClick }) => {
 
   return (
     <div
-      className="block w-64 text-sm px-5 py-3 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200"
+      className={`${className} block w-64 text-sm px-3 py-2 flex flex-col space-y-1 bg-gray-100 border-r-2 border-gray-200 hover:bg-gray-200`}
       onClick={() => onClick(quote)}
     >
       <div className="space-x-2 flex justify-between">
@@ -64,22 +74,28 @@ const TickerItem = ({ quote, description, onClick }) => {
         <span
           id="market-quote"
           className={`${
-            marketData.didPriceFall === null
-              ? ""
-              : marketData.didPriceFall
+            color === "green"
+              ? "text-green-600"
+              : color === "red"
               ? "text-red-600"
-              : "text-green-600"
+              : ""
           }`}
         >
           {formatCurrentPrice(marketData.current)}
         </span>
       </div>
       <div
-        className={`space-x-2 ${
+        className={`whitespace-no-wrap ${
           marketData.isNegative ? "text-red-700" : "text-green-700"
         }`}
       >
-        <span className="inline-flex">
+        <span className="text-xl sm:text-2xl font-bold mr-1">
+          {formatQuotePercentage(marketData.current, marketData.previous)}
+        </span>
+        <span>
+          {formatQuoteDifference(marketData.current, marketData.previous)}
+        </span>
+        <span className="ml-3 inline-flex">
           {marketData.isNegative ? (
             <svg
               id="Negative"
@@ -97,7 +113,7 @@ const TickerItem = ({ quote, description, onClick }) => {
           ) : (
             <svg
               id="Capa_1"
-              enable-background="new 0 0 515.556 515.556"
+              enableBackground="new 0 0 515.556 515.556"
               height="12"
               viewBox="0 0 515.556 515.556"
               width="12"
@@ -109,12 +125,6 @@ const TickerItem = ({ quote, description, onClick }) => {
               />
             </svg>
           )}
-        </span>
-        <span className="text-2xl font-bold">
-          {formatQuotePercentage(marketData.current, marketData.previous)}
-        </span>
-        <span>
-          {formatQuoteDifference(marketData.current, marketData.previous)}
         </span>
       </div>
     </div>

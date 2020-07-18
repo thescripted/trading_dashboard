@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from "react"
 import * as d3 from "d3"
 
-const height = 450
-const width = 900
-const margin = { top: 40, right: 60, bottom: 80, left: 80 }
+const height = 475
+const width = 750
+const margin = { top: 20, right: 60, bottom: 80, left: 65 }
 const formatDate = d3.utcFormat("%B %-d, %Y")
 const formatValue = d3.format("$.2f")
 const formatChange = (y0, y1) => {
@@ -59,11 +59,6 @@ const Chart = ({ data }) => {
     )
     .range([margin.left, width - margin.right])
     .padding(0.1)
-
-  console.log(data[0].datetime)
-  console.log(data[1].datetime)
-  console.log(d3.utcDay(data[0].datetime))
-  console.log(x(d3.utcDay(data[0].datetime)))
 
   const y = d3
     .scaleLinear()
@@ -147,7 +142,6 @@ const Chart = ({ data }) => {
       .data(data)
       .join("g")
       .attr("transform", (d) => {
-        console.log(d)
         return `translate(${x(d3.utcDay(d.datetime))}, 0)`
       })
 
@@ -209,7 +203,7 @@ const Chart = ({ data }) => {
   }, [])
 
   return (
-    <div className="w-3/4 h-full">
+    <div className="w-full md:w-3/4 h-full">
       <svg ref={svgElement} viewBox={`0 0 ${width} ${height}`}></svg>
     </div>
   )
