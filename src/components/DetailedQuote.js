@@ -6,7 +6,7 @@ import {
   getAccessToken,
 } from "../support"
 
-const DetailedQuote = ({ tickerToFetch }) => {
+const DetailedQuote = ({ tickerToFetch, isLineGraph, setLineGraph }) => {
   const [content, setContent] = useState({})
   useEffect(() => {
     fetch(
@@ -56,6 +56,12 @@ const DetailedQuote = ({ tickerToFetch }) => {
             <p className="text-sm text-gray-600">
               Last Updated: {date.toLocaleDateString()}
             </p>
+            <button
+              className="py-1 px-4 font-semibold text-blue-700 border border-blue-600 mt-3 hover:border-transparent hover:text-white hover:bg-blue-600 rounded"
+              onClick={() => setLineGraph(!isLineGraph)}
+            >
+              Toggle
+            </button>
           </div>
         </>
       )}

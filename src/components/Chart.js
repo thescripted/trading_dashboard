@@ -23,7 +23,7 @@ const Chart = ({ data }) => {
           .axisBottom(x)
           .tickValues(
             d3.utcMonday
-              .every(width > 720 ? 1 : 2)
+              .every(2)
               .range(data[0].datetime, data[data.length - 1].datetime)
           )
           .tickFormat(d3.utcFormat("%-m/%-d"))
@@ -118,6 +118,12 @@ const Chart = ({ data }) => {
     return { date, value }
   }
 
+  const line = d3
+    .line()
+    .defined((d) => !isNaN(d.close))
+    .x((d) => x(d3.utcDay(d.datetime)))
+    .y((d) => y(d.close))
+
   // Generate SVG Image
   useEffect(() => {
     const svg = d3.select(svgElement.current)
@@ -125,40 +131,51 @@ const Chart = ({ data }) => {
     svg.append("g").call(xAxis)
     svg.append("g").call(yAxis)
     const linetip = svg.append("path")
-    const g = svg
-      .append("g")
-      .attr("stroke-linecap", "butt")
-      .attr("stroke", "black")
-      .selectAll("g")
-      .data(data)
-      .join("g")
-      .attr("transform", (d) => {
-        return `translate(${x(d3.utcDay(d.datetime))}, 0)`
-      })
 
-    g.append("line")
-      .attr("y1", (d) => y(d.low))
-      .attr("y2", (d) => y(d.high))
+    svg
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", line)
 
-    g.append("line")
-      .attr("y1", (d) => y(d.open))
-      .attr("y2", (d) => y(d.close))
-      .attr("stroke-width", x.bandwidth())
-      .attr("stroke", (d) =>
-        d.open > d.close
-          ? d3.schemeSet1[0]
-          : d.close > d.open
-          ? d3.schemeSet1[2]
-          : d3.schemeSet1[8]
-      )
+    // const g = svg
+    //   .append("g")
+    //   .attr("stroke-linecap", "butt")
+    //   .attr("stroke", "black")
+    //   .selectAll("g")
+    //   .data(data)
+    //   .join("g")
+    //   .attr("transform", (d) => {
+    //     return `translate(${x(d3.utcDay(d.datetime))}, 0)`
+    //   })
 
-    g.append("title").text(
-      (d) => `${formatDate(d.datetime)}
-    Open: ${formatValue(d.open)}
-    Close: ${formatValue(d.close)} (${formatChange(d.open, d.close)})
-    Low: ${formatValue(d.low)}
-    High: ${formatValue(d.high)}`
-    )
+    // g.append("line")
+    //   .attr("y1", (d) => y(d.low))
+    //   .attr("y2", (d) => y(d.high))
+
+    // g.append("line")
+    //   .attr("y1", (d) => y(d.open))
+    //   .attr("y2", (d) => y(d.close))
+    //   .attr("stroke-width", x.bandwidth())
+    //   .attr("stroke", (d) =>
+    //     d.open > d.close
+    //       ? d3.schemeSet1[0]
+    //       : d.close > d.open
+    //       ? d3.schemeSet1[2]
+    //       : d3.schemeSet1[8]
+    //   )
+
+    // g.append("title").text(
+    //   (d) => `${formatDate(d.datetime)}
+    // Open: ${formatValue(d.open)}
+    // Close: ${formatValue(d.close)} (${formatChange(d.open, d.close)})
+    // Low: ${formatValue(d.low)}
+    // High: ${formatValue(d.high)}`
+    // )
 
     const tooltip = svg.append("g")
 
@@ -175,7 +192,7 @@ const Chart = ({ data }) => {
         .call(lineCallout, mouseX)
 
       tooltip
-        .attr("transform", `translate (${x(date)}, ${y(value.low)})`)
+        .attr("transform", `translate (${x(date)}, ${y(value.close) + 2})`)
         .call(
           callout,
           `${formatDate(date)}\nOpen: ${formatValue(
