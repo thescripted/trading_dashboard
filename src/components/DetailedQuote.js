@@ -56,12 +56,12 @@ const DetailedQuote = ({ tickerToFetch, isLineGraph, setLineGraph }) => {
             <p className="text-sm text-gray-600">
               Last Updated: {date.toLocaleDateString()}
             </p>
-            <button
+            {/* <button
               className="py-1 px-4 font-semibold text-blue-700 border border-blue-600 mt-3 hover:border-transparent hover:text-white hover:bg-blue-600 rounded"
               onClick={() => setLineGraph(!isLineGraph)}
             >
               Toggle
-            </button>
+            </button> */}
           </div>
         </>
       )}
