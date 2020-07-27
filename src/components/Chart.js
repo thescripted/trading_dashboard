@@ -118,11 +118,11 @@ const Chart = ({ data }) => {
     return { date, value }
   }
 
-  const line = d3
-    .line()
-    .defined((d) => !isNaN(d.close))
-    .x((d) => x(d3.utcDay(d.datetime)))
-    .y((d) => y(d.close))
+  // const line = d3
+  //   .line()
+  //   .defined((d) => !isNaN(d.close))
+  //   .x((d) => x(d3.utcDay(d.datetime)))
+  //   .y((d) => y(d.close))
 
   // Generate SVG Image
   useEffect(() => {
