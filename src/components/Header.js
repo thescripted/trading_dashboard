@@ -136,7 +136,7 @@ const Header = ({ queryResultCallBack }) => {
         )}
       </span>
       <a
-        href="https://www.github.com/thescripted/trading_dashboard"
+        href="https://www.github.com/thescripted/Stocko"
         className="self-center"
       >
         <button className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-8 rounded hidden md:block">
