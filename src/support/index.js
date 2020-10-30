@@ -28,6 +28,7 @@ export const generateAccessToken = (refresh_token) => {
   )}&access_type=&code=&client_id=${encodeURIComponent(
     process.env.REACT_APP_API_KEY
   )}&refresh_uri=`
+
   fetch("https://api.tdameritrade.com/v1/oauth2/token", {
     method: "POST",
     headers: {
@@ -41,5 +42,6 @@ export const generateAccessToken = (refresh_token) => {
 }
 
 export const getAccessToken = () => {
+  console.log(access_token)
   return access_token
 }

@@ -9,7 +9,7 @@ import { generateAccessToken, getAccessToken } from "./support"
 const App = () => {
   const [chartData, setChartData] = useState([])
 
-  const queryResultCallBack = (ticker) => {
+  const queryResultCallback = (ticker) => {
     fetch(
       `https://api.tdameritrade.com/v1/marketdata/${ticker}/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false`,
       {
@@ -22,7 +22,7 @@ const App = () => {
       .then((res) => setChartData(res))
   }
 
-  const tickerResultCallBack = (ticker) => {
+  const tickerResultCallback = (ticker) => {
     fetch(
       `https://api.tdameritrade.com/v1/marketdata/${ticker}/pricehistory?periodType=month&period=6&frequencyType=daily&frequency=1&needExtendedHoursData=false`,
       {
@@ -42,8 +42,8 @@ const App = () => {
 
   return (
     <div>
-      <Header queryResultCallBack={queryResultCallBack} />
-      <Ticker tickerResultCallBack={tickerResultCallBack} />
+      <Header queryResultCallBack={queryResultCallback} />
+      <Ticker tickerResultCallBack={tickerResultCallback} />
       <Content chartData={chartData} />
     </div>
   )

@@ -59,7 +59,7 @@ const Header = ({ queryResultCallBack }) => {
     }, 300),
     []
   )
-
+  // TODO: Hoist this API request up.
   useEffect(() => {
     if (!state.listOfStocks || !state.listOfStocks.length) {
       let filteredStock
